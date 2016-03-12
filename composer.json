@@ -1,0 +1,21 @@
+{
+    "name": "smalot/docker-machine",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sebastien Malot",
+            "email": "sebastien@malot.fr"
+        }
+    ],
+    "require": {
+        "symfony/yaml": "~3",
+        "adambrett/shell-wrapper": "^0.6.0"
+    },
+    "autoload": {
+        "psr-4": { "Smalot\\Docker\\Machine\\": "src" }
+    },
+    "minimum-stability": "stable",
+    "require-dev": {
+        "smalot/expect": "^0.1.0"
+    }
+}
