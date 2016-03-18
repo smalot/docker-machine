@@ -31,6 +31,11 @@ abstract class BaseDriver
     protected $options = [];
 
     /**
+     * @var array
+     */
+    protected $arguments = [];
+
+    /**
      * BaseDriver constructor.
      * @param string $code
      */
@@ -101,7 +106,7 @@ abstract class BaseDriver
      */
     public function buildArguments($values)
     {
-        $arguments = [];
+        $this->arguments = [];
 
         foreach ($values as $code => $value) {
             if (isset($this->options[$code])) {
@@ -113,10 +118,18 @@ abstract class BaseDriver
                     $value = escapeshellarg($value);
                 }
 
-                $arguments[] = '--' . $this->options[$code]['argument'] . '=' . $value;
+                $this->arguments[] = '--' . $this->options[$code]['argument'] . '=' . $value;
             }
         }
 
-        return $arguments;
+        return $this->arguments;
+    }
+
+    /**
+     * @return array
+     */
+    public function getArguments()
+    {
+        return $this->arguments;
     }
 }
