@@ -8,6 +8,7 @@ options:
     env: VIRTUALBOX_MEMORY_SIZE
     default: 1024
     type: int
+    required: true
   cpu_count:
     argument: virtualbox-cpu-count
     name: "Number of CPUs to use to create the VM."
@@ -15,6 +16,7 @@ options:
     env: VIRTUALBOX_CPU_COUNT
     default: 1
     type: int
+    required: true
   disk_size:
     argument: virtualbox-disk-size
     name: "Size of disk for the host in MB."
@@ -22,6 +24,7 @@ options:
     env: VIRTUALBOX_DISK_SIZE
     default: 20000
     type: int
+    required: true
   host_dns_resolver:
     argument: virtualbox-host-dns-resolver
     name: "Use the host DNS resolver."
@@ -41,7 +44,7 @@ options:
     name: "The name of a Boot2Docker VM to import."
     description: ""
     env: VIRTUALBOX_BOOT2DOCKER_IMPORT_VM
-    default: boot2docker-vm
+    default: ~                                                        #boot2docker-vm
     type: string
   hostonly_cidr:
     argument: virtualbox-hostonly-cidr

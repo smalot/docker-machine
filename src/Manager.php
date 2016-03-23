@@ -28,13 +28,7 @@ class Manager
     {
         $command = new Command('active');
 
-        $runner = new ProcOpen();
-        $runner->addEnvironmentVariables($this->env);
-        $runner->run($command);
-
-        if ($runner->getReturnCode() <> 0) {
-            return false;
-        }
+        $runner = $this->executeCommand($command);
 
         return trim($runner->getOutput());
     }
@@ -44,6 +38,7 @@ class Manager
      * @param array $arguments
      * @return string
      * @throws \Smalot\Docker\Machine\HostNotFoundException
+     * @throws \RuntimeException
      */
     public function config($machineName, $arguments = [])
     {
@@ -51,15 +46,9 @@ class Manager
         $command->addArguments($arguments);
         $command->addParam($machineName);
 
-        $runner = new ProcOpen();
-        $runner->run($command);
-        $output = $runner->getOutput();
+        $runner = $this->executeCommand($command);
 
-        if (preg_match('/Host not found/', $output)) {
-            throw new HostNotFoundException($machineName, $runner->getReturnCode());
-        }
-
-        return $output;
+        return $runner->getOutput();
     }
 
     /**
@@ -71,20 +60,15 @@ class Manager
     public function create($machineName, BaseDriver $driver = null, $arguments = [])
     {
         $command = new Command('create');
-
-        if (!is_null($driver)) {
-            $arguments['driver'] = $driver->getCode();
-            $command->addArguments($driver->getArguments());
-        }
-
         $command->addArguments($arguments);
         $command->addParam($machineName);
 
-//        var_dump($_POST);
-//        echo((string) $command);die;
+        if (!is_null($driver)) {
+            $command->addArgument('driver', $driver->getCode());
+            $command->addArguments($driver->getArguments());
+        }
 
-        $runner = new ProcOpen();
-        $runner->run($command);
+        $runner = $this->executeCommand($command, 120);
 
         return $runner->getOutput();
     }
@@ -101,17 +85,11 @@ class Manager
         $command->addArguments($arguments);
         $command->addParam($machineName);
 
-        $runner = new ProcOpen();
-        $runner->run($command);
-        $output = $runner->getOutput();
-
-        if (preg_match('/Host not found/', $output)) {
-            throw new HostNotFoundException($machineName, -1);
-        }
+        $runner = $this->executeCommand($command);
 
         // Todo: generate an array with envs.
 
-        return array();//$output;
+        return array();// $runner->getOutput();
     }
 
     /**
@@ -127,54 +105,44 @@ class Manager
         $command->addArguments($arguments);
         $command->addParam($machineName);
 
-        $runner = new ProcOpen();
-        $runner->run($command);
-        $output = $runner->getOutput();
+        $runner = $this->executeCommand($command);
 
-        if (preg_match('/Host not found/', $output)) {
-            throw new HostNotFoundException($machineName, -1);
-        }
-
-        if ($json = json_decode($output, true)) {
+        if ($json = json_decode($runner->getOutput(), true)) {
             return $json;
         }
 
-        throw new \Exception('Invalid response.', -1);
+        throw new \RuntimeException('Invalid response.', -1);
     }
 
-    
+    /**
+     * @param string $machineName
+     * @return string
+     * @throws \Smalot\Docker\Machine\HostNotFoundException
+     */
     public function ip($machineName)
     {
         $command = new Command('ip');
         $command->addParam($machineName);
 
-        $runner = new ProcOpen();
-        $output = $runner->run($command);
+        $runner = $this->executeCommand($command);
 
-        if (preg_match('/Host not found/', $output)) {
-            throw new HostNotFoundException($machineName, -1);
-        }
-
-        return $output;
+        return $runner->getOutput();
     }
 
+    /**
+     * @param string $machineName
+     * @return bool
+     * @throws \Exception
+     * @throws \Smalot\Docker\Machine\HostNotFoundException
+     */
     public function kill($machineName)
     {
         $command = new Command('kill');
         $command->addParam($machineName);
 
-        $runner = new ProcOpen();
-        $result = $runner->run($command);
+        $runner = $this->executeCommand($command);
 
-        if (preg_match('/Host not found/', $result)) {
-            throw new HostNotFoundException($machineName, -1);
-        }
-
-        if ($error = $runner->getReturnCode()) {
-            throw new \Exception($result, $error);
-        }
-
-        return true;
+        return $runner->getOutput();
     }
 
     /**
@@ -185,8 +153,7 @@ class Manager
         $command = new Command('ls');
         $command->addFlag('q');
 
-        $runner = new ProcOpen();
-        $runner->run($command);
+        $runner = $this->executeCommand($command);
 
         $list = preg_split('/[\n\r]+/', $runner->getOutput());
 
@@ -218,10 +185,9 @@ class Manager
         $command = new Command('ls');
         $command->addArguments($arguments);
 
-        $runner = new ProcOpen();
-        $runner->run($command);
+        $runner = $this->executeCommand($command);
+        $output = $runner->getOutput();
 
-        $output = $runner->run($command);
         $lines = preg_split('/[\n\r]+/', $output);
         $list = [];
 
@@ -235,25 +201,24 @@ class Manager
         return $list;
     }
 
+  /**
+   * @param string $machineName
+   * @return string
+   */
     public function provision($machineName)
     {
         $command = new Command('provision');
         $command->addParam($machineName);
 
-        $runner = new ProcOpen();
-        $result = $runner->run($command);
+        $runner = $this->executeCommand($command);
 
-        if (preg_match('/Host not found/', $result)) {
-            throw new HostNotFoundException($machineName, -1);
-        }
-
-        if ($error = $runner->getReturnCode()) {
-            throw new \Exception($result, $error);
-        }
-
-        return true;
+        return $runner->getOutput();
     }
 
+  /**
+   * @param string $machineName
+   * @return string
+   */
     public function regenerateCerts($machineName)
     {
         $command = new Command('regenerate-certs');
@@ -261,39 +226,30 @@ class Manager
         // Force generation.
         $command->addFlag('f');
 
-        $runner = new ProcOpen();
-        $result = $runner->run($command);
+        $runner = $this->executeCommand($this->env);
 
-        if (preg_match('/Host not found/', $result)) {
-            throw new HostNotFoundException($machineName, -1);
-        }
-
-        if ($error = $runner->getReturnCode()) {
-            throw new \Exception($result, $error);
-        }
-
-        return true;
+        return $runner->getOutput();
     }
 
+  /**
+   * @param string $machineName
+   * @return string
+   */
     public function restart($machineName)
     {
         $command = new Command('restart');
         $command->addParam($machineName);
 
-        $runner = new ProcOpen();
-        $result = $runner->run($command);
+        $runner = $this->executeCommand($command);
 
-        if (preg_match('/Host not found/', $result)) {
-            throw new HostNotFoundException($machineName, -1);
-        }
-
-        if ($error = $runner->getReturnCode()) {
-            throw new \Exception($result, $error);
-        }
-
-        return true;
+        return $runner->getOutput();
     }
 
+  /**
+   * @param string $machineName
+   * @param bool $force
+   * @return string
+   */
     public function rm($machineName, $force = false)
     {
         $command = new Command('rm');
@@ -303,20 +259,18 @@ class Manager
         }
         $command->addParam($machineName);
 
-        $runner = new ProcOpen();
-        $result = $runner->run($command);
+        $runner = $this->executeCommand($command);
 
-        if (preg_match('/Host not found/', $result)) {
-            throw new HostNotFoundException($machineName, -1);
-        }
-
-        if ($error = $runner->getReturnCode()) {
-            throw new \Exception($result, $error);
-        }
-
-        return true;
+        return $runner->getOutput();
     }
 
+  /**
+   * @param string $machineName
+   * @param string $source
+   * @param string $destination
+   * @param bool $recursive
+   * @return string
+   */
     public function scp($machineName, $source, $destination, $recursive = false)
     {
         $command = new Command('scp');
@@ -327,128 +281,108 @@ class Manager
         $command->addParam($source);
         $command->addParam($destination);
 
-        $runner = new ProcOpen();
-        $result = $runner->run($command);
+        $runner = $this->executeCommand($command);
 
-        if (preg_match('/Host not found/', $result)) {
-            throw new HostNotFoundException($machineName, -1);
-        }
-
-        if ($error = $runner->getReturnCode()) {
-            throw new \Exception($result, $error);
-        }
-
-        return true;
+        return $runner->getOutput();
     }
 
+  /**
+   * @param string $machineName
+   * @param Command|string $commandLine
+   * @return string
+   */
     public function ssh($machineName, $commandLine)
     {
         $command = new Command('ssh');
         $command->addParam($machineName);
         $command->addArgument($commandLine);
 
-        $runner = new ProcOpen();
-        $result = $runner->run($command);
+        $runner = $this->executeCommand($command);
 
-        if (preg_match('/^(Host not found)/', $result)) {
-            throw new HostNotFoundException($machineName, -1);
-        }
-
-        return $output;
+        return $runner->getOutput();
     }
 
+  /**
+   * @param string $machineName
+   * @return string
+   */
     public function start($machineName)
     {
         $command = new Command('start');
         $command->addParam($machineName);
 
-        $runner = new ProcOpen();
-        $result = $runner->run($command);
+        $runner = $this->executeCommand($command);
 
-        if (preg_match('/Host not found/', $result)) {
-            throw new HostNotFoundException($machineName, -1);
-        }
-
-        if ($error = $runner->getReturnCode()) {
-            throw new \Exception($result, $error);
-        }
-
-        return true;
+        return $runner->getOutput();
     }
 
+  /**
+   * @param string $machineName
+   * @return string
+   */
     public function status($machineName)
     {
         $command = new Command('status');
         $command->addParam($machineName);
 
-        $runner = new ProcOpen();
-        $result = $runner->run($command);
+        $runner = $this->executeCommand($command);
 
-        if (preg_match('/Host not found/', $result)) {
-            throw new HostNotFoundException($machineName, -1);
-        }
-
-        if ($error = $runner->getReturnCode()) {
-            throw new \Exception($result, $error);
-        }
-
-        return true;
+        return $runner->getOutput();
     }
 
+  /**
+   * @param string $machineName
+   * @return string
+   */
     public function stop($machineName)
     {
         $command = new Command('stop');
         $command->addParam($machineName);
 
-        $runner = new ProcOpen();
-        $result = $runner->run($command);
+        $runner = $this->executeCommand($command);
 
-        if (preg_match('/Host not found/', $result)) {
-            throw new HostNotFoundException($machineName, -1);
-        }
-
-        if ($error = $runner->getReturnCode()) {
-            throw new \Exception($result, $error);
-        }
-
-        return true;
+        return $runner->getOutput();
     }
 
+  /**
+   * @param string $machineName
+   * @return string
+   */
     public function upgrade($machineName)
     {
         $command = new Command('upgrade');
         $command->addParam($machineName);
 
-        $runner = new ProcOpen();
-        $result = $runner->run($command);
+        $runner = $this->executeCommand($command);
 
-        if (preg_match('/Host not found/', $result)) {
-            throw new HostNotFoundException($machineName, -1);
-        }
-
-        if ($error = $runner->getReturnCode()) {
-            throw new \Exception($result, $error);
-        }
-
-        return true;
+        return $runner->getOutput();
     }
 
+    /**
+     * @param string $machineName
+     * @return string
+     */
     public function url($machineName)
     {
         $command = new Command('url');
         $command->addParam($machineName);
 
+        $runner = $this->executeCommand($command);
+
+        return $runner->getOutput();
+    }
+
+    /**
+     * @param \Smalot\Docker\Machine\Command $command
+     * @param int $timeout
+     * @return \Smalot\Commander\Runner\ProcOpen
+     */
+    protected function executeCommand(Command $command, $timeout = 15)
+    {
         $runner = new ProcOpen();
-        $result = $runner->run($command);
+        $runner->addEnvironmentVariables($this->env, $timeout);
+        $runner->run($command);
 
-        if (preg_match('/Host not found/', $result)) {
-            throw new HostNotFoundException($machineName, -1);
-        }
-
-        if ($error = $runner->getReturnCode()) {
-            throw new \Exception($result, $error);
-        }
-
-        return $output;
+        return $runner;
     }
 }
