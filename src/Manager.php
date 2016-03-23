@@ -5,6 +5,10 @@ namespace Smalot\Docker\Machine;
 use Smalot\Commander\Runner\ProcOpen;
 use Smalot\Docker\Machine\Driver\BaseDriver;
 
+/**
+ * Class Manager
+ * @package Smalot\Docker\Machine
+ */
 class Manager
 {
     /**
@@ -240,7 +244,7 @@ class Manager
         $command = new Command('restart');
         $command->addParam($machineName);
 
-        $runner = $this->executeCommand($command);
+        $runner = $this->executeCommand($command, 60);
 
         return $runner->getOutput();
     }
@@ -289,15 +293,16 @@ class Manager
   /**
    * @param string $machineName
    * @param Command|string $commandLine
+   * @param int $timeout
    * @return string
    */
-    public function ssh($machineName, $commandLine)
+    public function ssh($machineName, $commandLine, $timeout = 15)
     {
         $command = new Command('ssh');
         $command->addParam($machineName);
         $command->addArgument($commandLine);
 
-        $runner = $this->executeCommand($command);
+        $runner = $this->executeCommand($command, $timeout);
 
         return $runner->getOutput();
     }
@@ -311,7 +316,7 @@ class Manager
         $command = new Command('start');
         $command->addParam($machineName);
 
-        $runner = $this->executeCommand($command);
+        $runner = $this->executeCommand($command, 60);
 
         return $runner->getOutput();
     }
@@ -353,7 +358,7 @@ class Manager
         $command = new Command('upgrade');
         $command->addParam($machineName);
 
-        $runner = $this->executeCommand($command);
+        $runner = $this->executeCommand($command, 60);
 
         return $runner->getOutput();
     }
@@ -380,8 +385,8 @@ class Manager
     protected function executeCommand(Command $command, $timeout = 15)
     {
         $runner = new ProcOpen();
-        $runner->addEnvironmentVariables($this->env, $timeout);
-        $runner->run($command);
+        $runner->addEnvironmentVariables($this->env);
+        $runner->run($command, $timeout);
 
         return $runner;
     }
