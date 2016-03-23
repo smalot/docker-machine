@@ -1,4 +1,5 @@
-vendor/*
-.idea/*
-test*.php
-composer.lock
+/vendor/*
+/.idea/*
+/test*.php
+/composer.lock
+/composer.phar
