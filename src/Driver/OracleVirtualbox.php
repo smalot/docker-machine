@@ -13,6 +13,6 @@ class OracleVirtualbox extends BaseDriver
      */
     public function __construct()
     {
-        parent::__construct('oracle_virtualbox');
+        parent::__construct('virtualbox');
     }
 }

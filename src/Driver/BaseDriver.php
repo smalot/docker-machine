@@ -110,15 +110,15 @@ abstract class BaseDriver
 
         foreach ($values as $code => $value) {
             if (isset($this->options[$code])) {
-                if (is_bool($value)) {
-                    $value = ($value ? 'true' : 'false');
-                }
+//                if (is_bool($value)) {
+//                    $value = ($value ? 'true' : 'false');
+//                }
 
-                if (!is_null($value)) {
-                    $value = escapeshellarg($value);
-                }
+//                if (!is_null($value)) {
+//                    $value = $value;
+//                }
 
-                $this->arguments[] = '--' . $this->options[$code]['argument'] . '=' . $value;
+                $this->arguments[$this->options[$code]['argument']][] =  $value;
             }
         }
 

@@ -3,75 +3,93 @@ description: "Create machines locally using VirtualBox. This driver requires Vir
 options:
   memory:
     argument: virtualbox-memory
-    description: "Size of memory for the host in MB."
+    name: "Size of memory for the host in MB."
+    description: ""
     env: VIRTUALBOX_MEMORY_SIZE
     default: 1024
     type: int
   cpu_count:
     argument: virtualbox-cpu-count
-    description: "Number of CPUs to use to create the VM. Defaults to single CPU."
+    name: "Number of CPUs to use to create the VM."
+    description: "Defaults to single CPU."
     env: VIRTUALBOX_CPU_COUNT
     default: 1
     type: int
   disk_size:
     argument: virtualbox-disk-size
-    description: "Size of disk for the host in MB."
+    name: "Size of disk for the host in MB."
+    description: ""
     env: VIRTUALBOX_DISK_SIZE
     default: 20000
     type: int
   host_dns_resolver:
     argument: virtualbox-host-dns-resolver
-    description: "Use the host DNS resolver."
+    name: "Use the host DNS resolver."
+    description: ""
     env: VIRTUALBOX_HOST_DNS_RESOLVER
     default: false
     type: bool
   boot2docker_url:
     argument: virtualbox-boot2docker-url
     env: VIRTUALBOX_BOOT2DOCKER_URL
-    description: "The URL of the boot2docker image. Defaults to the latest available version."
+    name: "The URL of the boot2docker image."
+    description: "Defaults to the latest available version."
     default: ~
     type: url
   import_boot2docker_vm:
     argument: virtualbox-import-boot2docker-vm
-    description: "The name of a Boot2Docker VM to import."
+    name: "The name of a Boot2Docker VM to import."
+    description: ""
     env: VIRTUALBOX_BOOT2DOCKER_IMPORT_VM
     default: boot2docker-vm
     type: string
   hostonly_cidr:
     argument: virtualbox-hostonly-cidr
-    description: "The CIDR of the host only adapter."
+    name: "The CIDR of the host only adapter."
+    description: ""
     env: VIRTUALBOX_HOSTONLY_CIDR
     default: 192.168.99.1/24
     type: string
   hostonly_nictype:
     argument: virtualbox-hostonly-nictype
-    description: "Host Only Network Adapter Type. Possible values are are ‘82540EM’ (Intel PRO/1000), ‘Am79C973’ (PCnet-FAST III) and ‘virtio-net’ Paravirtualized network adapter."
+    name: "Host Only Network Adapter Type."
+    description: "Possible values are are ‘82540EM’ (Intel PRO/1000), ‘Am79C973’ (PCnet-FAST III) and ‘virtio-net’ Paravirtualized network adapter."
     env: VIRTUALBOX_HOSTONLY_NIC_TYPE
     default: 82540EM
+    options:
+      82540EM: "Intel PRO/1000"
+      Am79C973: "PCnet-FAST III"
+      virtio-net: "Paravirtualized network adapter"
     type: string
   hostonly_nicpromisc:
     argument: virtualbox-hostonly-nicpromisc
-    description: "Host Only Network Adapter Promiscuous Mode. Possible options are deny , allow-vms, allow-all"
+    name: "Host Only Network Adapter Promiscuous Mode."
+    description: "Possible options are deny, allow-vms, allow-all"
     env: VIRTUALBOX_HOSTONLY_NIC_PROMISC
     default: deny
+    options:
+      deny: Deny
+      allow-vms: Allow VMS
+      allow-all: Allow All
     type: string
   no_share:
     argument: virtualbox-no-share
-    description: "Disable the mount of your home directory."
+    name: "Disable the mount of your home directory."
+    description: ""
     env: VIRTUALBOX_NO_SHARE
     default: false
     type: bool
   dns_proxy:
     argument: virtualbox-dns-proxy
-    description: "Proxy all DNS requests to the host."
+    name: "Proxy all DNS requests to the host."
+    description: ""
     env: VIRTUALBOX_DNS_PROXY
     default: false
     type: bool
   no_vtx_check:
     argument: virtualbox-no-vtx-check
-    description: "Disable checking for the availability of hardware virtualization before the vm is started."
+    name: "Disable checking for the availability of hardware virtualization before the vm is started."
+    description: ""
     env: VIRTUALBOX_NO_VTX_CHECK
     default: false
     type: bool
-
-

@@ -2,7 +2,7 @@
 
 namespace Smalot\Docker\Machine;
 
-use AdamBrett\ShellWrapper\Runners\Exec;
+use Smalot\Commander\Runner\ProcOpen;
 
 /**
  * Class Machine
@@ -36,80 +36,98 @@ class Machine
         $this->name = $name;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
 
-    public function getStatus()
-    {
-
-    }
-
+    /**
+     * @return \Smalot\Commander\Runner\RunnerBase
+     */
     public function start()
     {
         $command = new Command('start');
         $command->addParam($this->getName());
 
-        $runner = new Exec();
+        $runner = new ProcOpen();
         $runner->run($command);
 
-        return ($runner->getReturnValue() === 0);
+        return $runner;
     }
 
+    /**
+     * @return \Smalot\Commander\Runner\RunnerBase
+     */
     public function stop()
     {
         $command = new Command('stop');
         $command->addParam($this->getName());
 
-        $runner = new Exec();
+        $runner = new ProcOpen();
         $runner->run($command);
 
-        return ($runner->getReturnValue() === 0);
+        return $runner;
     }
 
+    /**
+     * @return \Smalot\Commander\Runner\RunnerBase
+     */
     public function restart()
     {
         $command = new Command('restart');
         $command->addParam($this->getName());
 
-        $runner = new Exec();
+        $runner = new ProcOpen();
         $runner->run($command);
 
-        return ($runner->getReturnValue() === 0);
+        return $runner;
     }
 
+    /**
+     * @return \Smalot\Commander\Runner\RunnerBase
+     */
     public function kill()
     {
         $command = new Command('kill');
         $command->addParam($this->getName());
 
-        $runner = new Exec();
+        $runner = new ProcOpen();
         $runner->run($command);
 
-        return ($runner->getReturnValue() === 0);
+        return $runner;
     }
 
+    /**
+     * @return \Smalot\Commander\Runner\RunnerBase
+     */
     public function rm()
     {
         $command = new Command('rm');
         $command->addParam($this->getName());
 
-        $runner = new Exec();
+        $runner = new ProcOpen();
         $runner->run($command);
 
-        return ($runner->getReturnValue() === 0);
+        return $runner;
     }
 
+    /**
+     * @param Command|string $sshCommand
+     * @return \Smalot\Commander\Runner\RunnerBase
+     */
     public function ssh($sshCommand)
     {
-        $command = new Command('rm');
+        $command = new Command('ssh');
         $command->addParam($this->getName());
+        $command->addParam((string) $sshCommand);
 
-        $runner = new Exec();
+        $runner = new ProcOpen();
         $runner->run($command);
 
-        return ($runner->getReturnValue() === 0);
+        return $runner;
     }
 
     /**

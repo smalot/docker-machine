@@ -9,13 +9,13 @@
     ],
     "require": {
         "symfony/yaml": "~3",
-        "adambrett/shell-wrapper": "^0.6.0"
+        "smalot/shell-commander": "dev-master"
     },
+    "require-dev": {
+        "atoum/atoum": "^2.6"
+    },
+    "minimum-stability": "dev",
     "autoload": {
         "psr-4": { "Smalot\\Docker\\Machine\\": "src" }
-    },
-    "minimum-stability": "stable",
-    "require-dev": {
-        "smalot/expect": "^0.1.0"
     }
 }
