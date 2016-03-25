@@ -230,7 +230,7 @@ class Manager
         // Force generation.
         $command->addFlag('f');
 
-        $runner = $this->executeCommand($this->env);
+        $runner = $this->executeCommand($command);
 
         return $runner->getOutput();
     }
