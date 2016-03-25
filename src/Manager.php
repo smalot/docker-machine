@@ -80,20 +80,40 @@ class Manager
     /**
      * @param string $machineName
      * @param array $arguments
+     * @param bool $activate
      * @return array
      * @throws \Smalot\Docker\Machine\HostNotFoundException
      */
-    public function env($machineName, $arguments = [])
+    public function env($machineName, $arguments = [], $activate = false)
     {
         $command = new Command('env');
         $command->addArguments($arguments);
+        $command->addArgument('shell', 'sh');
         $command->addParam($machineName);
 
         $runner = $this->executeCommand($command);
+        $output = $runner->getOutput();
 
-        // Todo: generate an array with envs.
+        $vars = [];
 
-        return array();// $runner->getOutput();
+        if (preg_match_all('/(export\s+([A-Z0-9_]+)=([^\n\r]+)?)+/i', $output, $matches)) {
+            foreach ($matches[0] as $index => $match) {
+                $name = $matches[2][$index];
+                $value = trim($matches[3][$index], '"');
+
+                if ($name == 'DOCKER_TLS_VERIFY') {
+                    $vars[$name] = (bool) $value;
+                } else {
+                    $vars[$name] = $value;
+                }
+
+                if ($activate) {
+                    putenv($name . '=' . $value);
+                }
+            }
+        }
+
+        return $vars;
     }
 
     /**
