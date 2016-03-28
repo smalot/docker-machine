@@ -1,0 +1,32 @@
+name: "Generic"
+description: "Create machines using an existing VM/Host with SSH. This is useful if you are using a provider that Machine does not support directly or if you would like to import an existing host to allow Docker Machine to manage."
+options:
+  ip_address:
+    argument: generic-ip-address
+    name: "IP Address of host."
+    description: ""
+    env: GENERIC_IP_ADDRESS
+    default: ""
+    type: string
+    required: true
+  ssh_key:
+    argument: generic-ssh-key
+    name: "Path to the SSH user private key."
+    description: "defers to ssh-agent"
+    env: GENERIC_SSH_KEY
+    default: ""
+    type: string
+  ssh_user:
+    argument: generic-ssh-user
+    name: "SSH username used to connect."
+    description: ""
+    env: GENERIC_SSH_USER
+    default: root
+    type: string
+  ssh_port:
+    argument: generic-ssh-port
+    name: "Port to use for SSH."
+    description: ""
+    env: GENERIC_SSH_PORT
+    default: 22
+    type: int

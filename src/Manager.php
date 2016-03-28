@@ -352,7 +352,7 @@ class Manager
 
         $runner = $this->executeCommand($command);
 
-        return $runner->getOutput();
+        return trim($runner->getOutput());
     }
 
   /**

@@ -1,0 +1,74 @@
+name: "Digital Ocean"
+description: "Create Docker machines on Digital Ocean."
+options:
+  access_token:
+    argument: digitalocean-access-token
+    name: "Your personal access token for the Digital Ocean API."
+    description: ""
+    env: DIGITALOCEAN_ACCESS_TOKEN
+    default: ""
+    type: string
+    required: true
+  image:
+    argument: digitalocean-image
+    name: "The name of the Digital Ocean image to use."
+    description: ""
+    env: DIGITALOCEAN_IMAGE
+    default: "ubuntu-15-10-x64"
+    type: string
+  region:
+    argument: digitalocean-region
+    name: "The region to create the droplet in."
+    description: 'See <a href="https://developers.digitalocean.com/documentation/v2/#regions" target="_blank">Regions API</a> for how to get a list.'
+    env: DIGITALOCEAN_REGION
+    default: "nyc3"
+    type: string
+  size:
+    argument: digitalocean-size
+    name: "The size of the Digital Ocean droplet."
+    description: ""
+    env: DIGITALOCEAN_SIZE
+    default: "512mb"
+    type: string
+  ipv6:
+    argument: digitalocean-ipv6
+    name: "Enable IPv6 support for the droplet."
+    description: ""
+    env: DIGITALOCEAN_IPV6
+    default: false
+    type: bool
+  private_networking:
+    argument: digitalocean-private-networking
+    name: "Enable private networking support for the droplet."
+    description: ""
+    env: DIGITALOCEAN_PRIVATE_NETWORKING
+    default: false
+    type: bool
+  backups:
+    argument: digitalocean-backups
+    name: "Enable Digital Oceans backups for the droplet."
+    description: ""
+    env: DIGITALOCEAN_BACKUPS
+    default: false
+    type: bool
+  userdata:
+    argument: digitalocean-userdata
+    name: "Path to file containing User Data for the droplet."
+    description: ""
+    env: DIGITALOCEAN_USERDATA
+    default: ""
+    type: string
+  ssh_user:
+    argument: digitalocean-ssh-user
+    name: "SSH username."
+    description: ""
+    env: DIGITALOCEAN_SSH_USER
+    default: "root"
+    type: string
+  ssh_port:
+    argument: digitalocean-ssh-port
+    name: "SSH port."
+    description: ""
+    env: DIGITALOCEAN_SSH_PORT
+    default: 22
+    type: int
